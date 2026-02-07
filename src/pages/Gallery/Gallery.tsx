@@ -1,12 +1,28 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import StarField from "@/components/common/StarField";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 
-function Gallery({ images }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+const images: string[] = []
+for (let i = 1; i <= 105; i++) {
+  images.push(`/images/gallery/Photos/jpg/Image${i}.JPG`);
+}
+for (let i = 106; i <= 114; i++) {
+  images.push(`/images/gallery/Photos/jpg/Image${i}.jpg`);
+}
+for (let i = 115; i <= 122; i++) {
+  images.push(`/images/gallery/Photos/png/Image${i}.PNG`);
+}
+for (let i = 123; i <= 126; i++) {
+  images.push(`/images/gallery/Photos/jpg/Image${i}.jpg`);
+}
 
-  const openModal = (index) => {
+
+function Gallery() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+
+  const openModal = (index: number) => {
     setSelectedImageIndex(index);
     setIsModalOpen(true);
   };
@@ -16,52 +32,62 @@ function Gallery({ images }) {
     setSelectedImageIndex(null);
   };
 
-  const closeOnOverlayClick = (e) => {
+  const closeOnOverlayClick = (e: React.MouseEvent) => {
     if (e.currentTarget.id === "default-modal") {
       closeModal();
     }
   };
 
-  const nextImage = (e) => {
+  const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedImageIndex((prev) => (prev + 1) % images.length);
+    setSelectedImageIndex((prev) => (prev !== null ? prev + 1 : 0) % images.length);
   };
 
-  const prevImage = (e) => {
+  const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedImageIndex(
-      (prev) => (prev - 1 + images.length) % images.length
+      (prev) => (prev !== null ? prev - 1 : images.length - 1) % images.length
     );
   };
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY });
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        setSelectedImageIndex((prev) =>
+          prev !== null ? (prev + 1) % images.length : 0
+        );
+      }
+
+      if (e.key === "ArrowLeft") {
+        setSelectedImageIndex((prev) =>
+          prev !== null ? (prev - 1 + images.length) % images.length : images.length - 1
+        );
+      }
+
+      if (e.key === "Escape") {
+        closeModal();
+      }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen]);
+
+
+
 
   return (
-    <>
-      {/* Custom Star Cursor */}
+    <div className="relative">
+      <img src="/bg/bg_gallery.png" alt="bg_gallery" className="w-full h-screen fixed top-0 left-0 -z-10" />
+      <StarField count={500} />
       <div
-        className="fixed top-0 left-0 pointer-events-none"
-        style={{
-          transform: `translate(${cursorPosition.x}px, ${cursorPosition.y}px)`,
-          zIndex: 1000,
-        }}
+        className="relative container px-5 py-10 mx-auto"
       >
-        <img src={"/star.png"} alt="Star Cursor" width={30} height={30} />
-      </div>
 
-      <div
-        className="bg-black container px-5 py-10 mx-auto"
-        style={{ cursor: "none" }}
-      >
         <div className="flex flex-col text-center text-white w-full mb-10">
-          <h1 className="sm:text-3xl text-2xl font-medium title-font mb-4 mt-4">
+          <h1 className="lg:text-5xl md:text-4xl sm:text-3xl text-2xl font-medium title-font mb-4 mt-4">
             Our camera roll
           </h1>
           <p className="lg:w-2/3 mx-auto leading-relaxed">
@@ -73,7 +99,7 @@ function Gallery({ images }) {
 
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
           {images.map((src, index) => (
-            <div key={index} className="p-2">
+            <div key={index} className="p-2 hover:scale-105 transition-transform duration-300">
               <button onClick={() => openModal(index)}>
                 <img
                   src={src}
@@ -88,9 +114,8 @@ function Gallery({ images }) {
         {/* Modal */}
         <div
           id="default-modal"
-          className={`${
-            isModalOpen ? "fixed" : "hidden"
-          } inset-0 z-50 flex items-center justify-center`}
+          className={`${isModalOpen ? "fixed" : "hidden"
+            } inset-0 z-50 flex items-center justify-center`}
           onClick={closeOnOverlayClick}
           style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
         >
@@ -99,6 +124,7 @@ function Gallery({ images }) {
               <button
                 className="absolute left-5 text-white"
                 onClick={prevImage}
+
               >
                 <ChevronLeft size={80} />
               </button>
@@ -108,6 +134,10 @@ function Gallery({ images }) {
                 alt={`Image ${selectedImageIndex + 1}`}
                 className="max-w-full max-h-full object-contain"
               />
+
+              <div className="absolute bottom-4 left-0 right-0 text-center text-white">
+                {selectedImageIndex + 1} / {images.length}
+              </div>
 
               <button
                 className="absolute right-5 text-white"
@@ -119,7 +149,7 @@ function Gallery({ images }) {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

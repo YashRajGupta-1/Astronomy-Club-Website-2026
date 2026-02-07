@@ -125,8 +125,29 @@
 }
 
 @layer base {
+
+  * {
+    @apply cursor-none!;
+  }
   
   body {
-    @apply bg-black text-white;
+    @apply bg-black text-white cursor-none;
   }
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+.animate-star-twinkle {
+  animation-name: star-twinkle;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
 }

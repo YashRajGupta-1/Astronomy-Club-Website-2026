@@ -1,7 +1,4 @@
-import Nebula from '@/components/common/Nebula'
 import NebulaBackground from '@/components/common/NebulaBackground'
-import HeroSpline from '@/components/home/HeroSpline'
-import React from 'react'
 
 const Home = () => {
   return (

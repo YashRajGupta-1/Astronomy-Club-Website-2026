@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   return (
-    <div className="h-[50px] flex bg-black justify-between sticky z-10 items-center top-0 w-full">
+    <div className="h-[50px] flex bg-black/50 backdrop-blur-sm justify-between sticky z-10 items-center top-0 w-full">
       {/* Logo */}
       <div className="flex w-[10%] font-bold text-white justify-center items-center lg:mx-[40px] md:mx-[30px] sm:mx-[20px] mx-[20px]">
         <img
